@@ -1,116 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birth Weight Form</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #dfe9f3, #ffffff);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+from flask import Flask, render_template, request
+import numpy as np
+import joblib
 
-        h1 {
-            color: #4a148c;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+app = Flask(__name__)
 
-        form {
-            background-color: #f3e5f5;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-        }
+model = joblib.load("model.pkl")
 
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #4a148c;
-        }
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 16px;
-            border: 1px solid #ce93d8;
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
+@app.route("/predict", methods=["POST"])
+def predict():
 
-        button {
-            width: 100%;
-            background-color: #8e24aa;
-            color: white;
-            padding: 12px;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    # Get form values
+    gestation = float(request.form["gestation"])
+    parity = float(request.form["parity"])
+    age = float(request.form["age"])
+    height_cm = float(request.form["height"])
+    weight_kg = float(request.form["weight"])
+    smoke = float(request.form["smoke"])
 
-        button:hover {
-            background-color: #6a1b9a;
-        }
+    # 🔥 Convert input to training units
+    height_inches = height_cm / 2.54
+    weight_pounds = weight_kg * 2.20462
 
-        .unit {
-            font-size: 12px;
-            color: #6a1b9a;
-            margin-bottom: 10px;
-        }
+    # Model input
+    input_data = np.array([[gestation, parity, age, height_inches, weight_pounds, smoke]])
 
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #4a148c;
-        }
-    </style>
-</head>
-<body>
+    prediction_ounces = model.predict(input_data)[0]
 
-    <h1>Predict Birth Weight Of Your Child:</h1>
+    # 🔥 Convert output
+    prediction_grams = prediction_ounces * 28.3495
+    prediction_kg = prediction_grams / 1000
 
-    <form action="/predict" method="POST">
+    return render_template(
+        "index.html",
+        prediction_grams=round(prediction_grams, 2),
+        prediction_kg=round(prediction_kg, 2),
+        gestation=gestation,
+        parity=parity,
+        age=age,
+        height=height_cm,
+        weight=weight_kg,
+        smoke=smoke
+    )
 
-        <label>Gestation (in Days)</label>
-        <input name="gestation" type="number" required>
-
-        <label>Parity (Number of Previous Births)</label>
-        <input name="parity" type="number" required>
-
-        <label>Age (Mother's Age in Years)</label>
-        <input name="age" type="number" required>
-
-        <label>Height (in Inches)</label>
-        <input name="height" type="number" required>
-
-        <label>Weight (in Pounds)</label>
-        <input name="weight" type="number" required>
-
-        <label>Smoke (0 = No, 1 = Yes)</label>
-        <input name="smoke" type="number" min="0" max="1" required>
-
-        <button type="submit">Predict Birth Weight</button>
-
-    </form>
-
-    {% if prediction %}
-        <h3 class="result">
-            Predicted Birth Weight: {{prediction}} ounces
-        </h3>
-    {% endif %}
-
-</body>
-</html>
+if __name__ == "__main__":
+    app.run(debug=True)
