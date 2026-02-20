@@ -54,25 +54,36 @@ project/
 └── index.html
 
 
----
+
 
 ## ⚙️ Installation & Setup
 
-### 1️⃣ Clone Repository
 
+### 1️⃣ Clone Repository
 ```bash
 git clone <your-repo-url>
 cd project
 2️⃣ Create Virtual Environment (Optional but Recommended)
 python -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate      # Windows
+
+
+Activate virtual environment:
+
+
+Mac/Linux
+
+source venv/bin/activate
+
+Windows
+
+venv\Scripts\activate
 3️⃣ Install Requirements
 pip install flask pandas scikit-learn
 4️⃣ Run Application
 python app.py
 
-Then open:
+
+Then open in your browser:
 
 http://127.0.0.1:5000/
 🔄 Unit Conversion Logic
@@ -88,42 +99,31 @@ Ounces → grams
 
 Grams → kilograms
 
+
+
 🎯 Example Output
 
-Predicted Birth Weight:
+Predicted Birth Weight:  3200 grams 3.20 kg
 
-3200 grams
-
-3.20 kg
-
-📌 Future Improvements
-
-Add input validation
-
+📌 Future Improvements:
+ Add input validation
 Add BMI auto-calculation
-
 Deploy to cloud (Render / Railway / Azure)
-
 Add REST API endpoint
-
 Add model evaluation metrics display
 
-👨‍💻 Author T.jayasri 
+
+
+👨‍💻 Author|T. Jayasri
 
 Developed using:
 
 Python
-
 Flask
-
 Pandas
-
 Scikit-learn
 
 📄 License
-
 This project is for educational purposes.
 
-
----
 
