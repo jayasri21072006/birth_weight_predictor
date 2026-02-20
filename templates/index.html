@@ -1,50 +1,46 @@
-from flask import Flask, render_template, request
-import numpy as np
-import joblib
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Birth Weight Prediction</title>
+</head>
+<body>
 
-app = Flask(__name__)
+    <h2>Predict Baby Birth Weight</h2>
 
-model = joblib.load("model.pkl")
+    <form action="/predict" method="POST">
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+        <label>Gestation (days):</label><br>
+        <input type="number" name="gestation" value="{{ gestation or '' }}" required><br><br>
 
-@app.route("/predict", methods=["POST"])
-def predict():
+        <label>Parity:</label><br>
+        <input type="number" name="parity" value="{{ parity or '' }}" required><br><br>
 
-    # Get form values
-    gestation = float(request.form["gestation"])
-    parity = float(request.form["parity"])
-    age = float(request.form["age"])
-    height_cm = float(request.form["height"])
-    weight_kg = float(request.form["weight"])
-    smoke = float(request.form["smoke"])
+        <label>Age (years):</label><br>
+        <input type="number" name="age" value="{{ age or '' }}" required><br><br>
 
-    # 🔥 Convert input to training units
-    height_inches = height_cm / 2.54
-    weight_pounds = weight_kg * 2.20462
+        <label>Height (cm):</label><br>
+        <input type="number" name="height" value="{{ height or '' }}" required><br><br>
 
-    # Model input
-    input_data = np.array([[gestation, parity, age, height_inches, weight_pounds, smoke]])
+        <label>Weight (kg):</label><br>
+        <input type="number" name="weight" value="{{ weight or '' }}" required><br><br>
 
-    prediction_ounces = model.predict(input_data)[0]
+        <label>Smoking:</label><br>
+        <select name="smoke" required>
+            <option value="">Select</option>
+            <option value="0" {% if smoke == 0.0 %}selected{% endif %}>No</option>
+            <option value="1" {% if smoke == 1.0 %}selected{% endif %}>Yes</option>
+        </select><br><br>
 
-    # 🔥 Convert output
-    prediction_grams = prediction_ounces * 28.3495
-    prediction_kg = prediction_grams / 1000
+        <button type="submit">Predict</button>
 
-    return render_template(
-        "index.html",
-        prediction_grams=round(prediction_grams, 2),
-        prediction_kg=round(prediction_kg, 2),
-        gestation=gestation,
-        parity=parity,
-        age=age,
-        height=height_cm,
-        weight=weight_kg,
-        smoke=smoke
-    )
+    </form>
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    {% if prediction_kg %}
+        <hr>
+        <h3>Predicted Birth Weight:</h3>
+        <p><strong>{{ prediction_grams }} grams</strong></p>
+        <p><strong>{{ prediction_kg }} kg</strong></p>
+    {% endif %}
+
+</body>
+</html>
