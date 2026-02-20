@@ -90,6 +90,16 @@
             font-size: 16px;
             margin: 6px 0;
         }
+
+        .disclaimer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #777;
+            line-height: 1.4;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -110,7 +120,7 @@
             Number of previous live births.
             <br>0 = First baby
             <br>1 = One previous baby
-            <br>2 = Two previous babies
+            <br>2 = Two previous babies etc..
         </div>
         <input type="number" name="parity" value="{{ parity or '' }}" min="0" required>
 
@@ -142,6 +152,13 @@
             <p><strong>{{ prediction_kg }} kg</strong></p>
         </div>
     {% endif %}
+
+    <div class="disclaimer">
+        ⚠️ This application is developed for educational and demonstration purposes only. 
+        It is not a certified medical tool and should not be used for diagnosis, 
+        treatment, or clinical decision-making. Please consult a qualified healthcare 
+        professional for medical advice.
+    </div>
 
 </div>
 
